@@ -1,0 +1,191 @@
+\section{Problem 5: Drude Model}
+
+In Problems 1--4, you studied vibrational models of solids. In this problem, you will move from lattice vibrations to electronic transport.
+
+The Drude model is the classical baseline for electrical conduction in metals. It treats conduction electrons as mobile classical carriers that accelerate under an applied electric field and lose momentum through scattering.
+
+The central idea is momentum relaxation. An electric field accelerates electrons, while scattering limits their average momentum and produces a steady current.
+
+The computational chain is
+\[
+n,e,m,\tau,\mathbf E
+\longrightarrow
+\mathbf v_d
+\longrightarrow
+\mathbf J
+\longrightarrow
+\sigma,\rho,\mu.
+\]
+
+The purpose of this problem is to compute how carrier density, effective mass, relaxation time, and electric field determine the classical electrical response of a metal.
+
+\subsection{Physical model}
+
+Consider a metal with electron density \(n\). Each electron has charge \(-e\), effective mass \(m\), and relaxation time \(\tau\). The relaxation time is the average time over which an electron keeps its momentum before scattering.
+
+Under an applied electric field \(\mathbf E\), the Drude equation for the average electron momentum is
+\[
+\frac{d\mathbf p}{dt}
+=
+-e\mathbf E
+-
+\frac{\mathbf p}{\tau}.
+\]
+
+In steady state, \(d\mathbf p/dt=0\), so the average momentum is
+\[
+\mathbf p_d=-e\tau\mathbf E.
+\]
+Since \(\mathbf p_d=m\mathbf v_d\), the drift velocity is
+\[
+\mathbf v_d=-\frac{e\tau}{m}\mathbf E.
+\]
+
+The current density is
+\[
+\mathbf J=-ne\mathbf v_d.
+\]
+Combining this with the drift velocity gives Ohm's law,
+\[
+\mathbf J=\sigma\mathbf E,
+\qquad
+\sigma=\frac{ne^2\tau}{m}.
+\]
+
+The resistivity and mobility are
+\[
+\rho=\frac{1}{\sigma},
+\qquad
+\mu=\frac{e\tau}{m}.
+\]
+
+The Drude model therefore connects microscopic transport parameters \((n,m,\tau)\) to macroscopic electrical response \((\sigma,\rho,\mu,\mathbf J)\).
+
+\subsection{Numerical implementation}
+
+Complete the provided skeleton file \texttt{drude.py} in \texttt{./src/dlsu\_solst}. Implement a class named \texttt{DrudeMetal}.
+
+The constructor should store the carrier density \(n\), charge magnitude \(e\), effective mass \(m\), and relaxation time \(\tau\).
+
+The method for drift velocity should accept an electric field \(\mathbf E\) and compute
+\[
+\mathbf v_d=-\frac{e\tau}{m}\mathbf E.
+\]
+
+The method for current density should accept an electric field \(\mathbf E\) and compute
+\[
+\mathbf J=-ne\mathbf v_d.
+\]
+
+The method for conductivity should compute
+\[
+\sigma=\frac{ne^2\tau}{m}.
+\]
+
+The method for resistivity should compute
+\[
+\rho=\frac{1}{\sigma}.
+\]
+
+The method for mobility should compute
+\[
+\mu=\frac{e\tau}{m}.
+\]
+
+The implementation should be progressive. The current density should use the drift velocity. The resistivity should use the conductivity. The mobility should use the relaxation time and effective mass.
+
+\subsection{Numerical checks}
+
+Check that the conductivity is positive when \(n>0\), \(e>0\), \(m>0\), and \(\tau>0\).
+
+Check that the resistivity and conductivity satisfy
+\[
+\rho\sigma\approx1.
+\]
+
+Check that the current density computed from the drift velocity agrees with the current density computed from Ohm's law:
+\[
+-ne\mathbf v_d\approx\sigma\mathbf E.
+\]
+
+Check that reversing the electric field reverses the drift velocity and current density:
+\[
+\mathbf E\rightarrow-\mathbf E
+\quad\Longrightarrow\quad
+\mathbf v_d\rightarrow-\mathbf v_d,
+\qquad
+\mathbf J\rightarrow-\mathbf J.
+\]
+
+Check that increasing \(\tau\) increases \(\sigma\), \(\mu\), and the magnitude of \(\mathbf v_d\).
+
+\subsection{Numerical experiments}
+
+Use your implementation to study how transport depends on the microscopic parameters.
+
+First, sweep the relaxation time \(\tau\). For each value of \(\tau\), compute the drift velocity, current density, conductivity, resistivity, and mobility. This shows how momentum relaxation controls electrical response.
+
+Second, sweep the carrier density \(n\). This shows that increasing the number of mobile carriers increases the conductivity.
+
+Third, sweep the effective mass \(m\). This shows that heavier carriers have smaller mobility and smaller conductivity for the same \(n\) and \(\tau\).
+
+Fourth, sweep the electric field \(E\). Compute \(J(E)\) and verify that the Drude model gives a linear current-field relation. The slope of this curve is the conductivity.
+
+Finally, construct a two-parameter conductivity map over \(n\) and \(\tau\):
+\[
+\sigma(n,\tau)=\frac{ne^2\tau}{m}.
+\]
+This map should show which combinations of carrier density and relaxation time produce high conductivity.
+
+\subsection{Required plots}
+
+Include the following plots:
+
+\begin{enumerate}
+    \item drift velocity \(v_d\) versus electric field \(E\);
+    \item current density \(J\) versus electric field \(E\);
+    \item conductivity \(\sigma\) versus relaxation time \(\tau\);
+    \item resistivity \(\rho\) versus relaxation time \(\tau\);
+    \item mobility \(\mu\) versus effective mass \(m\);
+    \item conductivity heat map as a function of \(n\) and \(\tau\).
+\end{enumerate}
+
+Each plot should have labeled axes, units where appropriate, and a short caption or explanation.
+
+\subsection{Results}
+
+Your results should report the drift velocity, current density, conductivity, resistivity, and mobility for at least one representative set of parameters.
+
+Report the numerical checks. State whether \(\rho\sigma\approx1\), whether \(-ne\mathbf v_d\approx\sigma\mathbf E\), and whether reversing the electric field reverses the drift velocity and current density.
+
+Report the parameter-sweep results. Explain how \(\tau\), \(n\), and \(m\) affect conductivity, resistivity, mobility, drift velocity, and current density.
+
+Report the conductivity map over \(n\) and \(\tau\). Identify the parameter region where the conductivity is largest.
+
+\subsection{Discussion}
+
+In your discussion, explain the physical meaning of momentum relaxation. In the Drude model, an electric field accelerates electrons, but scattering prevents indefinite acceleration. The result is a steady drift velocity and a finite conductivity.
+
+Explain why a larger relaxation time produces larger conductivity. A longer \(\tau\) means that electrons keep their momentum longer before scattering, so the same electric field produces a larger drift velocity and current density.
+
+Explain why increasing carrier density increases conductivity. More carriers means more charge is available to move through the material.
+
+Explain why increasing effective mass decreases mobility and conductivity. Heavier carriers accelerate less under the same electric force.
+
+Discuss the limitations of the Drude model. It treats electrons as classical particles and does not include Fermi-Dirac statistics, band structure, or the Pauli exclusion principle. These missing ingredients motivate the Sommerfeld model in Problem 6 and the tight-binding model in Problem 7.
+
+Conclude by summarizing the computational chain
+\[
+n,e,m,\tau,\mathbf E
+\longrightarrow
+\mathbf v_d
+\longrightarrow
+\mathbf J
+\longrightarrow
+\sigma,\rho,\mu.
+\]
+This chain shows how microscopic carrier parameters determine the macroscopic electrical response of a metal.
+
+\subsection{Collaboration reminder}
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.

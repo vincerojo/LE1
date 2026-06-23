@@ -1,0 +1,256 @@
+\section{Problem 4: Diatomic Linear Chain}
+
+In Problems 1--3, you used the quantum harmonic oscillator as the basic model of vibration and then used oscillator spectra to compute thermal observables. In this problem, you will compute the vibrational band structure of a one-dimensional diatomic chain.
+
+A diatomic chain has two atoms per unit cell. Because there are two displacement degrees of freedom per unit cell, the vibrational spectrum has two branches: an acoustic branch and an optical branch.
+
+The computational chain is
+\[
+k
+\longrightarrow
+D(k)
+\longrightarrow
+\omega^2(k)
+\longrightarrow
+\omega(k)
+\longrightarrow
+\text{phonon branches}.
+\]
+
+The goal is to compute the phonon dispersion relation numerically and compare it with the analytical dispersion relation.
+
+\subsection{Physical model}
+
+Consider a one-dimensional chain with two atoms per unit cell. The two atoms have masses \(M_1\) and \(M_2\). Neighboring atoms are connected by identical springs with spring constant \(\kappa\). The unit-cell lattice constant is \(a\).
+
+Let \(u_n\) be the displacement of the atom with mass \(M_1\) in cell \(n\), and let \(v_n\) be the displacement of the atom with mass \(M_2\) in cell \(n\). The equations of motion are
+\[
+M_1\frac{d^2u_n}{dt^2}
+=
+\kappa(v_n+v_{n-1}-2u_n),
+\qquad
+M_2\frac{d^2v_n}{dt^2}
+=
+\kappa(u_{n+1}+u_n-2v_n).
+\]
+
+These equations state that each atom is pulled by the two neighboring atoms connected to it by springs.
+
+\subsection{Bloch form and dynamical matrix}
+
+Use the Bloch form
+\[
+u_n(t)=Ue^{i(kna-\omega t)},
+\qquad
+v_n(t)=Ve^{i(kna-\omega t)}.
+\]
+
+Substituting this form into the equations of motion converts the coupled difference equations into a \(2\times2\) eigenvalue problem. In mass-weighted form,
+\[
+D(k)\mathbf q=\omega^2(k)\mathbf q,
+\qquad
+\mathbf q=
+\begin{bmatrix}
+q_1\\
+q_2
+\end{bmatrix}.
+\]
+
+The dynamical matrix is
+\[
+D(k)=
+\begin{bmatrix}
+\dfrac{2\kappa}{M_1}
+&
+-\dfrac{\kappa}{\sqrt{M_1M_2}}\left(1+e^{-ika}\right)
+\\[1em]
+-\dfrac{\kappa}{\sqrt{M_1M_2}}\left(1+e^{ika}\right)
+&
+\dfrac{2\kappa}{M_2}
+\end{bmatrix}.
+\]
+
+The eigenvalues of \(D(k)\) are the squared angular frequencies,
+\[
+\lambda_j(k)=\omega_j^2(k).
+\]
+The phonon frequencies are therefore \(\omega_j(k)=\sqrt{\lambda_j(k)}\). The lower branch is the acoustic branch \(\omega_-(k)\), and the higher branch is the optical branch \(\omega_+(k)\).
+
+\subsection{Analytical dispersion relation}
+
+The analytical dispersion relation for the diatomic chain is
+\[
+\omega_{\pm}^2(k)
+=
+\kappa
+\left(
+\frac{1}{M_1}
++
+\frac{1}{M_2}
+\right)
+\pm
+\kappa
+\sqrt{
+\left(
+\frac{1}{M_1}
++
+\frac{1}{M_2}
+\right)^2
+-
+\frac{4}{M_1M_2}
+\sin^2\left(\frac{ka}{2}\right)
+}.
+\]
+
+The lower-frequency solution \(\omega_-(k)\) is the acoustic branch, and the higher-frequency solution \(\omega_+(k)\) is the optical branch.
+
+At \(k=0\), the acoustic branch should satisfy
+\[
+\omega_-(0)=0.
+\]
+At \(k=0\), the optical branch should satisfy
+\[
+\omega_+^2(0)
+=
+2\kappa
+\left(
+\frac{1}{M_1}
++
+\frac{1}{M_2}
+\right).
+\]
+
+These two limits are important numerical checks.
+
+\subsection{Numerical implementation}
+
+Complete the provided skeleton file \texttt{diatomic\_chain.py}. Implement a class named \texttt{DiatomicChain1D}.
+
+The constructor should store \(M_1\), \(M_2\), \(\kappa\), \(a\), and the number of wavevector points \(N_k\). It should create a wavevector grid over the first Brillouin zone,
+\[
+-\frac{\pi}{a}\le k\le\frac{\pi}{a}.
+\]
+
+The method \texttt{k\_grid} should return the wavevector grid. The method \texttt{dynamical\_matrix(k)} should construct \(D(k)\). The method \texttt{frequencies\_at\_k(k)} should diagonalize \(D(k)\), sort the two eigenvalues from lowest to highest, and return the acoustic and optical frequencies. The method \texttt{dispersion()} should compute both branches over the full \(k\)-grid. The method \texttt{analytical\_frequencies(k)} should compute the closed-form acoustic and optical frequencies.
+
+The numerical implementation should follow the chain
+\[
+k
+\longrightarrow
+D(k)
+\longrightarrow
+\lambda_j(k)
+\longrightarrow
+\omega_j(k).
+\]
+
+Because roundoff error can produce very small negative eigenvalues, values of \(\omega^2(k)\) that are negative only at the level of numerical roundoff should be treated carefully before taking the square root.
+
+\subsection{Numerical checks}
+
+Check that the dynamical matrix is Hermitian:
+\[
+D(k)=D^\dagger(k).
+\]
+
+Check that all computed values of \(\omega^2(k)\) are nonnegative up to small numerical roundoff.
+
+Check that the acoustic branch satisfies \(\omega_-(0)\approx0\).
+
+Check that the optical branch at \(k=0\) satisfies
+\[
+\omega_+^2(0)
+\approx
+2\kappa
+\left(
+\frac{1}{M_1}
++
+\frac{1}{M_2}
+\right).
+\]
+
+Check that the numerical frequencies agree with the analytical dispersion relation. For example, compute the branch errors
+\[
+\Delta\omega_{\pm}(k)
+=
+\omega_{\pm}^{\mathrm{num}}(k)
+-
+\omega_{\pm}^{\mathrm{exact}}(k).
+\]
+
+\subsection{Numerical experiments}
+
+First compute and plot the acoustic and optical branches over the first Brillouin zone. Both branches should be shown on the same plot.
+
+Then study how the mass ratio changes the dispersion. Fix \(M_1\), \(\kappa\), and \(a\), and repeat the calculation for several values of \(M_2/M_1\). Plot the resulting acoustic and optical branches. Discuss how the separation between the two branches changes as the two masses become more different.
+
+Compute the band gap between the acoustic and optical branches at the Brillouin zone boundary:
+\[
+\Delta\omega_{\mathrm{gap}}
+=
+\omega_+\left(\frac{\pi}{a}\right)
+-
+\omega_-\left(\frac{\pi}{a}\right).
+\]
+Plot \(\Delta\omega_{\mathrm{gap}}\) as a function of the mass ratio \(M_2/M_1\).
+
+Also examine the long-wavelength limit near \(k=0\). The acoustic branch should become approximately linear near \(k=0\). Estimate the acoustic slope
+\[
+v_s
+\approx
+\frac{\omega_-(\Delta k)-\omega_-(0)}{\Delta k}.
+\]
+This slope is the sound velocity in the long-wavelength limit.
+
+\subsection{Required plots}
+
+Include the following plots:
+
+\begin{enumerate}
+    \item acoustic and optical branches \(\omega_-(k)\) and \(\omega_+(k)\);
+    \item numerical and analytical dispersion curves on the same axes;
+    \item branch error \(\Delta\omega_{\pm}(k)\) versus \(k\);
+    \item acoustic and optical branches for several mass ratios \(M_2/M_1\);
+    \item zone-boundary gap \(\Delta\omega_{\mathrm{gap}}\) versus mass ratio;
+    \item acoustic branch near \(k=0\), showing the approximately linear long-wavelength behavior.
+\end{enumerate}
+
+Each plot should have labeled axes and a short caption or explanation.
+
+\subsection{Results}
+
+Your results should report the acoustic and optical frequencies over the first Brillouin zone. Identify which branch is acoustic and which branch is optical.
+
+Report the numerical checks. State whether \(D(k)\) is Hermitian, whether \(\omega^2(k)\ge0\), whether \(\omega_-(0)\approx0\), and whether the numerical dispersion agrees with the analytical expression.
+
+Report how the branch separation changes with mass ratio. State what happens when \(M_1=M_2\), and what happens when the two masses become very different.
+
+Report the estimated long-wavelength acoustic slope \(v_s\).
+
+\subsection{Discussion}
+
+Explain why the diatomic chain has two phonon branches. The reason is that there are two displacement degrees of freedom per unit cell.
+
+Discuss the physical meaning of the two branches. In the long-wavelength acoustic branch, neighboring atoms move mostly in phase. In the long-wavelength optical branch, neighboring atoms move mostly out of phase.
+
+Discuss how changing the mass ratio \(M_2/M_1\) changes the separation between the acoustic and optical branches. When the masses are equal, the diatomic chain behaves like a folded version of a monatomic chain. When the masses are different, a gap opens between the acoustic and optical branches at the Brillouin zone boundary.
+
+Discuss the long-wavelength acoustic slope. This slope gives the sound velocity of the chain in the continuum limit.
+
+Conclude by summarizing the computational chain
+\[
+k
+\longrightarrow
+D(k)
+\longrightarrow
+\omega^2(k)
+\longrightarrow
+\omega(k)
+\longrightarrow
+\text{acoustic and optical branches}.
+\]
+This chain shows how the equations of motion of a lattice become a matrix eigenvalue problem and how the eigenvalues produce the phonon dispersion relation.
+
+\subsection{Collaboration reminder}
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.

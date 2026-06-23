@@ -1,0 +1,183 @@
+\section{Instructions}
+
+\subsection{Overview}
+
+This assessment is about how simple quantum models become working models of solids.
+
+You have already seen that quantum systems have discrete allowed states. In this assessment, you will use those states to compute measurable quantities. For vibrational systems, the main measurable quantity is heat capacity. For electronic systems, the main quantities include conductivity, Fermi energy, electronic heat capacity, and band structure.
+
+The assessment contains seven problems, summarized in Table~\ref{tab:assessment-problems}.
+
+\begin{table}[h]
+\centering
+\caption{Summary of problems in the assessment.}
+\label{tab:assessment-problems}
+\begin{tabularx}{\textwidth}{clX}
+\toprule
+Problem & Topic & Purpose \\
+\midrule
+1 & Quantum harmonic oscillator & Build the basic quantized vibration model. \\
+2 & Einstein solid & Use oscillator energies to compute heat capacity. \\
+3 & Debye solid & Replace one oscillator frequency with a density of modes. \\
+4 & Lattice vibrations & Compute normal modes and phonon branches. \\
+5 & Drude model & Model classical electron transport in a metal. \\
+6 & Sommerfeld model & Add Fermi-Dirac statistics to free electrons. \\
+7 & Tight binding & Build electronic bands from coupled atomic orbitals. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The problems follow a progression from quantized vibrations to lattice heat capacity, then from classical electron transport to quantum electronic bands.
+
+The goal is to show how ideas from modern physics, quantum mechanics, and statistical mechanics become computational models of solid state physics.
+
+\subsection{Submission package}
+
+This assessment has been distributed as a Python package containing skeleton code, notebooks, tests, and a \LaTeX{} template. Complete the required function implementations inside the provided package structure. Do not rename files, move files, change public function signatures, or rewrite the package structure unless explicitly instructed.
+
+Submit the completed repository as one compressed folder named
+
+\begin{center}
+\texttt{LASTNAME\_FIRSTNAME\_SOLIDSTATE\_EXAM.zip}
+\end{center}
+
+Your submission must preserve the same repository folder structure used to distribute the assessment. Submit the completed repository, not only the PDF.
+
+Table~\ref{tab:submission-components} summarizes the required components of the submission package.
+
+\begin{table}[h]
+\centering
+\caption{Required components of the submission package.}
+\label{tab:submission-components}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+Path & Required content \\
+\midrule
+\texttt{./LA1} & Assessment files and problem materials distributed with the exam. Preserve this folder. \\
+\texttt{./latex-template} & \LaTeX{} source files used to generate \texttt{main.pdf}. You may modify these files to create your written submission. \\
+\texttt{./notebooks} & Python notebooks used for calculations, plots, numerical checks, and oral examination. \\
+\texttt{./src/dlsu\_solst} & Python package source code. Complete the required function implementations in this folder. \\
+\texttt{./tests} & Visible tests for basic checking. Additional tests based on the reference implementation may be used during grading. \\
+\texttt{./pyproject.toml} & Python package configuration file. Do not delete or rename this file. \\
+\texttt{./README.md} & Brief instructions explaining how to run your code and reproduce your results. \\
+\texttt{./submission.pdf} & Written solutions, derivations, plots, numerical checks, discussion, citations, and AI-use statement. \\
+\texttt{./references.bib} & Bibliographic entries for any sources cited in the written submission. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Your Python files and notebooks should run from the repository root without requiring changes to the repository folder structure.
+
+\subsection{Citations}
+
+Do not cite a source unless you actually used it. When citing a standard result, include the specific equation, section, chapter, or page number when possible.
+
+For example, if you use an equation from Kittel, write something like
+
+\begin{quote}
+Following the harmonic oscillator energy spectrum in Kittel \cite[Eq.~(x.xx)]{kittel2005solidstate}, the allowed oscillator energies are
+\[
+E_n=\hbar\omega\left(n+\frac{1}{2}\right).
+\]
+\end{quote}
+
+If you use a derivation from a textbook section, write something like
+
+\begin{quote}
+The Debye density of states follows the standard phonon counting argument in Kittel \cite[Sec.~x.x]{kittel2005solidstate}.
+\end{quote}
+
+If you use a result from a chapter, write something like
+
+\begin{quote}
+The Drude and Sommerfeld models are standard free-electron models of metals; see Ashcroft and Mermin \cite[Ch.~x]{ashcroft1976solidstate}.
+\end{quote}
+
+If you use the original papers, cite them directly:
+
+\begin{quote}
+The Einstein and Debye heat-capacity models were introduced in the original works of Einstein \cite{einstein1907specificheat} and Debye \cite{debye1912specificheat}.
+\end{quote}
+
+Replace \texttt{x.xx}, \texttt{x.x}, and \texttt{x} with the actual equation, section, chapter, or page number you used.
+
+\subsection{Collaboration policy}
+
+This assessment is designed to reflect technical work in academic and research environments, where discussion, feedback, debugging help, and comparison of methods are normal parts of the work. The professional expectation is not isolation, but accurate attribution and responsibility for the submitted work. Acknowledging useful discussions is standard academic practice and a professional courtesy to collaborators and peers.
+
+This project is difficult, and collaboration is expected. Appropriate collaboration includes discussing the physics, interpreting problem statements, comparing numerical approaches, identifying bugs, checking calculations, and evaluating whether results are physically reasonable.
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.
+
+Your submitted work must belong to you. You may not copy another student's code, written explanations, plots, notebooks, or numerical results. You may not submit work that you do not understand or cannot explain during the oral examination.
+
+If you worked with other students, include one sentence for each collaborator in your \texttt{submission.pdf} using the following format:
+
+\begin{quote}
+\texttt{[student name]} worked with me to \texttt{[briefly describe the discussion, debugging help, comparison of approaches, or other assistance]}.
+\end{quote}
+
+For example:
+
+\begin{quote}
+\texttt{Juan Dela Cruz} worked with me to \texttt{compare our numerical heat capacity plots and identify an error in my temperature grid}.
+\end{quote}
+
+If you did not work with other students, write:
+
+\begin{quote}
+I did not collaborate with other students while completing this assessment.
+\end{quote}
+
+\subsection{AI-use statement}
+
+AI tools are now common in technical work, including programming, debugging, editing, and checking explanations. The professional expectation is not that these tools were never used, but that their use is disclosed accurately and that the submitted work is reviewed, understood, and owned by the student.
+
+No points will be deducted for appropriate AI use, provided that the use is disclosed and the submitted code, calculations, plots, explanations, citations, and conclusions are your own.
+
+Your \texttt{submission.pdf} must include an AI-use statement. If you used any large language model, AI coding assistant, or automated writing tool, include one sentence for each tool using the following format:
+
+\begin{quote}
+I used \texttt{[AI tool name]} to \texttt{[briefly describe whether the tool was used for code drafting, debugging, explanation, plotting, writing, editing, or checking]}.
+\end{quote}
+
+For example:
+
+\begin{quote}
+I used \texttt{ChatGPT} to \texttt{debug my finite-difference Hamiltonian implementation and revise my explanation of wavefunction normalization}.
+\end{quote}
+
+After listing any AI tools used, include the following statement:
+
+\begin{quote}
+I have reviewed all AI-generated output. I am responsible for the correctness of the submitted code, calculations, explanations, citations, plots, and conclusions. I am prepared to explain and defend all submitted work during the oral examination.
+\end{quote}
+
+If you did not use any AI tools, write:
+
+\begin{quote}
+I did not use any AI tools or large language models while completing this assessment.
+\end{quote}
+
+Submissions without an AI-use statement may not receive full credit for the written submission component.
+\subsection{Grading}
+
+The assessment will be graded using three equally weighted components:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Component & Weight \\
+\midrule
+Code implementation & One third \\
+Written submission & One third \\
+Oral examination & One third \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The code implementation will be evaluated based on correctness, completeness, readability, and whether the required functions in the distributed Python package have been completed.
+
+The written submission will be evaluated based on derivations, explanations, plots, numerical checks, citations, AI-use statement, and physical interpretation.
+
+The oral examination will be based on your submitted PDF and the Python files or notebooks included in the distributed repository. During the oral examination, you will present your results, explain your code, justify your modeling choices, and answer questions about the physics and numerical methods used in your work.

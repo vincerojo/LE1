@@ -1,0 +1,101 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{bm}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{siunitx}
+
+\usepackage{enumitem}
+\setlist[itemize]{topsep=0.25em, itemsep=0.15em}
+\setlist[enumerate]{topsep=0.25em, itemsep=0.15em}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries,
+    commentstyle=\itshape,
+    stringstyle=\ttfamily,
+    showstringspaces=false,
+    frame=single,
+    breaklines=true
+}
+
+\lstset{style=pythonstyle}
+
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+\title{SOLST01 Long Assessment 1}
+\author{Eugene Joseph M. Ragasa}
+\date{De La Salle University \\ AY2025--2026 Term 3}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+
+    \vspace*{1.5cm}
+
+    {\Large \textbf{SOLST01 Long Assessment 1}\par}
+    \vspace{0.3cm}
+
+    {\large Solid State Physics\par}
+    \vspace{0.2cm}
+
+    {De La Salle University\par}
+    {AY2025--2026 Term 3\par}
+    \vspace{0.5cm}
+
+    {Eugene Joseph M. Ragasa\par}
+
+    \vspace{1.5cm}
+
+    \tableofcontents
+
+    \vfill
+\end{titlepage}
+
+\input{LA_instructions}
+
+\clearpage
+\input{LA1_problem1}
+
+\clearpage
+\input{LA1_problem2}
+
+\clearpage
+\input{LA1_problem3}
+
+\clearpage
+\input{LA1_problem4}
+
+\clearpage
+\input{LA1_problem5}
+
+\clearpage
+\input{LA1_problem6}
+
+\clearpage
+\input{LA1_problem7}
+
+\clearpage
+\addcontentsline{toc}{section}{References}
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

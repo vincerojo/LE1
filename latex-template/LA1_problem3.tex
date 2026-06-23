@@ -1,0 +1,195 @@
+\section{Problem 3: Debye Solid}
+
+In Problem 2, you computed the thermodynamics of an Einstein solid by assuming that every oscillator has the same angular frequency \(\omega_E\). In this problem, you will replace the single Einstein frequency with a continuum of vibrational frequencies.
+
+The Debye model describes a solid using a phonon density of states. Instead of assigning every vibrational mode the same frequency, the Debye model distributes the modes over frequencies from \(0\) to the Debye cutoff frequency \(\omega_D\).
+
+The computational chain is
+\[
+\omega
+\longrightarrow
+g(\omega)
+\longrightarrow
+\langle E(\omega,T)\rangle
+\longrightarrow
+U(T)
+\longrightarrow
+C_V(T).
+\]
+
+The purpose of this problem is to show how a distribution of microscopic vibrational modes determines the macroscopic heat capacity of a solid.
+
+\subsection{Physical model}
+
+A crystalline solid with \(N_{\mathrm{atom}}\) atoms has
+\[
+N_{\mathrm{mode}}=3N_{\mathrm{atom}}
+\]
+vibrational modes.
+
+In the Debye model, the allowed vibrational frequencies lie in the interval \(0\le \omega\le\omega_D\). The three-dimensional Debye density of states is
+\[
+g(\omega)=\frac{9N_{\mathrm{atom}}}{\omega_D^3}\omega^2,
+\qquad
+0\le\omega\le\omega_D.
+\]
+
+This density of states is normalized so that
+\[
+\int_0^{\omega_D}g(\omega)\,d\omega=3N_{\mathrm{atom}}.
+\]
+This condition means that the density of states contains the correct total number of vibrational modes.
+
+Each mode is still a quantum harmonic oscillator. A mode with angular frequency \(\omega\) has average energy
+\[
+\langle E(\omega,T)\rangle
+=
+\frac12\hbar\omega
++
+\frac{\hbar\omega}{
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)-1
+}.
+\]
+The first term is the zero-point energy. The second term is the temperature-dependent thermal energy.
+
+The total internal energy is obtained by integrating over all phonon frequencies:
+\[
+U(T)=
+\int_0^{\omega_D}
+g(\omega)\langle E(\omega,T)\rangle\,d\omega.
+\]
+
+The heat capacity is
+\[
+C_V(T)=\frac{dU}{dT}.
+\]
+In your implementation, compute \(C_V(T)\) using a centered finite difference:
+\[
+C_V(T)\approx
+\frac{U(T+\Delta T)-U(T-\Delta T)}{2\Delta T}.
+\]
+
+\subsection{Numerical model}
+
+Complete the provided skeleton implementation in \texttt{debye.py}. The constructor should store the physical parameters and create a frequency grid on the interval \(0\le\omega\le\omega_D\).
+
+Use a uniform grid \(\omega_i=i\Delta\omega\), where \(i=0,1,\ldots,N_\omega-1\). The grid should cover the full interval from \(0\) to \(\omega_D\). Use this grid to approximate the internal energy integral by the finite sum
+\[
+U(T)\approx
+\sum_i
+g(\omega_i)
+\langle E(\omega_i,T)\rangle
+\Delta\omega.
+\]
+
+The method \texttt{frequency\_grid} should return the frequency grid and the spacing \(\Delta\omega\). The method \texttt{density\_of\_states} should evaluate \(g(\omega)\). The method \texttt{mode\_average\_energy} should evaluate \(\langle E(\omega,T)\rangle\). The method \texttt{internal\_energy} should approximate the Debye energy integral. The method \texttt{heat\_capacity} should compute \(C_V(T)\) from a finite difference of \(U(T)\).
+
+Near \(\omega=0\), the factor
+\[
+\frac{\hbar\omega}{
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)-1
+}
+\]
+has a finite limit. Your numerical implementation should handle the \(\omega=0\) point carefully so that it does not produce division by zero or \texttt{nan} values.
+
+\subsection{Numerical checks}
+
+First, check the normalization of the density of states. Numerically approximate
+\[
+\int_0^{\omega_D}g(\omega)\,d\omega
+\]
+using your frequency grid. The result should be close to \(3N_{\mathrm{atom}}\).
+
+Second, check that the internal energy is positive:
+\[
+U(T)>0.
+\]
+
+Third, compute \(C_V(T)\) over a temperature grid. The heat capacity should be small at low temperature and should approach the high-temperature classical limit
+\[
+C_V\rightarrow3N_{\mathrm{atom}}k_{\mathrm B}.
+\]
+
+Fourth, check the effect of the number of frequency grid points \(N_\omega\). If \(N_\omega\) is too small, the integral over the density of states will be inaccurate. Repeat the calculation for several values of \(N_\omega\) and show that the density-of-states normalization and heat-capacity curve converge.
+
+\subsection{Numerical experiments}
+
+Use your implementation to study how different frequency ranges contribute to the heat capacity.
+
+For each temperature \(T_j\), compute the contribution of each frequency grid point to the internal energy:
+\[
+u_i(T_j)=g(\omega_i)\langle E(\omega_i,T_j)\rangle\Delta\omega.
+\]
+Store these values in a two-dimensional array. Use this array to make a heat map showing which phonon frequencies contribute most strongly to the internal energy at different temperatures.
+
+Then compute the cumulative mode count
+\[
+M(\omega_m)=\sum_{i=0}^{m}g(\omega_i)\Delta\omega.
+\]
+This should increase from \(0\) to approximately \(3N_{\mathrm{atom}}\). Plot \(M(\omega)\) versus \(\omega\) to show how the Debye density of states accumulates vibrational modes.
+
+Also compute the cumulative internal-energy contribution
+\[
+U(\omega_m,T)=\sum_{i=0}^{m}g(\omega_i)\langle E(\omega_i,T)\rangle\Delta\omega.
+\]
+Use this to show how low-frequency and high-frequency modes contribute at different temperatures.
+
+Finally, compare the numerical heat capacity against the expected limiting behavior. At low temperature, the Debye model predicts a \(T^3\)-type heat capacity. At high temperature, the heat capacity should approach \(3N_{\mathrm{atom}}k_{\mathrm B}\). Your results should show both trends if the frequency grid and temperature range are chosen well.
+
+\subsection{Required plots}
+
+Include the following plots:
+
+\begin{enumerate}
+    \item Debye density of states \(g(\omega)\) versus \(\omega\);
+    \item cumulative mode count \(M(\omega)\) versus \(\omega\);
+    \item internal energy \(U(T)\) versus temperature;
+    \item heat capacity \(C_V(T)\) versus temperature;
+    \item normalized heat capacity \(C_V/(3N_{\mathrm{atom}}k_{\mathrm B})\) versus temperature;
+    \item heat map of frequency-resolved internal-energy contributions \(u_i(T_j)\);
+    \item heat-capacity convergence for several values of \(N_\omega\).
+\end{enumerate}
+
+Each plot should have labeled axes and a short caption or explanation.
+
+\subsection{Results}
+
+Your results should report the numerical density-of-states normalization
+\[
+\sum_i g(\omega_i)\Delta\omega
+\]
+and compare it with \(3N_{\mathrm{atom}}\).
+
+Report the internal energy and heat capacity over the chosen temperature range. State whether \(C_V(T)\) approaches the classical high-temperature limit. Also state whether the low-temperature behavior is consistent with the Debye model.
+
+Report how the results change as \(N_\omega\) increases. The density-of-states normalization and heat-capacity curve should become more stable as the frequency grid is refined.
+
+\subsection{Discussion}
+
+In your discussion, explain how the Debye model improves on the Einstein model by using a distribution of vibrational frequencies instead of a single oscillator frequency.
+
+Explain the meaning of the density of states \(g(\omega)\). The density of states tells how many vibrational modes occur in a small frequency interval near \(\omega\). Because \(g(\omega)\propto\omega^2\), the number of modes grows rapidly at higher frequencies.
+
+Discuss the heat-capacity curve. At low temperature, only low-frequency modes are significantly thermally excited. At high temperature, all modes become thermally active and the heat capacity approaches \(3N_{\mathrm{atom}}k_{\mathrm B}\).
+
+Discuss the frequency-resolved heat map. Explain which frequencies contribute at low temperature and how the contributing frequency range changes as temperature increases.
+
+Discuss numerical convergence. Explain why the density-of-states normalization and heat capacity depend on the frequency grid resolution. State how you decided that your chosen \(N_\omega\) was large enough.
+
+Conclude by summarizing the computational chain
+\[
+\omega
+\longrightarrow
+g(\omega)
+\longrightarrow
+\langle E(\omega,T)\rangle
+\longrightarrow
+U(T)
+\longrightarrow
+C_V(T).
+\]
+This chain shows how the Debye density of states connects microscopic vibrational modes to macroscopic heat capacity.
+
+\subsection{Collaboration reminder}
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.

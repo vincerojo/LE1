@@ -1,0 +1,375 @@
+\section{Problem 6: Sommerfeld Model}
+
+In Problem 5, you used the Drude model as a classical baseline for electronic transport. In this problem, you will keep the free-electron picture but replace classical electron statistics with Fermi-Dirac statistics.
+
+The Sommerfeld model explains why electrons in a metal do not behave like a classical gas. At low temperature, the electron states below the Fermi energy are almost completely filled. Temperature mainly changes the occupation of states near the Fermi energy.
+
+The computational chain is
+\[
+n
+\longrightarrow
+E_F
+\longrightarrow
+D(E)
+\longrightarrow
+f(E,T)
+\longrightarrow
+u(T)
+\longrightarrow
+c_V^{e}(T).
+\]
+
+Here, \(n\) is the electron density, \(E_F\) is the Fermi energy, \(D(E)\) is the free-electron density of states per unit volume, \(f(E,T)\) is the Fermi-Dirac occupation, \(u(T)\) is the electronic energy density, and \(c_V^{e}(T)\) is the electronic heat capacity per unit volume.
+
+\subsection{Fermi sea and Fermi energy}
+
+The Sommerfeld model begins with the quantum states of a free electron gas. Because electrons are fermions, each quantum state can be occupied only according to the Pauli exclusion principle. At zero temperature, electrons fill the available energy states from the lowest energy upward.
+
+This filled collection of states is called the Fermi sea. The highest occupied energy at \(T=0\) is the Fermi energy \(E_F\).
+
+For a three-dimensional free-electron gas, the occupied states fill a sphere in \(k\)-space. The radius of this sphere is the Fermi wavevector,
+\[
+k_F=(3\pi^2n)^{1/3}.
+\]
+
+The Fermi energy is the free-electron energy at \(k=k_F\):
+\[
+E_F=\frac{\hbar^2k_F^2}{2m}
+=
+\frac{\hbar^2}{2m}(3\pi^2n)^{2/3}.
+\]
+
+The Fermi energy is determined by state filling. At \(T=0\), the electron density is obtained by filling all states up to \(E_F\):
+\[
+n=\int_0^{E_F}D(E)\,dE.
+\]
+A larger electron density means that more quantum states must be filled, so the Fermi sphere becomes larger and \(E_F\) increases.
+
+At \(T=0\), the occupation function is a step function:
+\[
+f(E,0)=
+\begin{cases}
+1, & E<E_F,\\
+0, & E>E_F.
+\end{cases}
+\]
+
+This is the basic quantum correction missing from the Drude model. The Drude model treats carriers classically, while the Sommerfeld model accounts for the fact that most low-energy electron states are already occupied.
+
+\subsection{Fermi-Dirac occupation and thermal broadening}
+
+At nonzero temperature, the sharp zero-temperature occupation is replaced by the Fermi-Dirac distribution:
+\[
+f(E,T)
+=
+\frac{1}{
+\exp\left(\frac{E-\mu}{k_{\mathrm B}T}\right)+1
+}.
+\]
+
+Here, \(\mu\) is the chemical potential. In the low-temperature regime of this problem, use the approximation
+\[
+\mu\approx E_F.
+\]
+
+The effect of temperature is to smear the occupation near the Fermi energy. States slightly below \(E_F\) become partially empty, and states slightly above \(E_F\) become partially occupied. The width of this smeared region is of order \(k_{\mathrm B}T\).
+
+At \(E=\mu\), the occupation is
+\[
+f(\mu,T)=\frac12.
+\]
+Therefore, when \(\mu\approx E_F\),
+\[
+f(E_F,T)\approx\frac12.
+\]
+
+Only electrons within an energy range of order \(k_{\mathrm B}T\) around \(E_F\) can significantly change their occupation. Electrons deep below \(E_F\) remain almost fully occupied, while states far above \(E_F\) remain almost empty.
+
+This explains why the electronic heat capacity of a metal is much smaller than the classical prediction. Most electrons do not contribute thermally; only electrons near the Fermi surface are thermally active.
+
+A useful temperature scale is the Fermi temperature,
+\[
+T_F=\frac{E_F}{k_{\mathrm B}}.
+\]
+For realistic metallic densities, \(T\ll T_F\) at ordinary temperatures. This is why the low-temperature Sommerfeld approximation is useful for many metals.
+
+\subsection{Density of states and energy integrals}
+
+The three-dimensional free-electron density of states per unit volume, including spin degeneracy, is
+\[
+D(E)
+=
+\frac{1}{2\pi^2}
+\left(
+\frac{2m}{\hbar^2}
+\right)^{3/2}
+E^{1/2}.
+\]
+
+The density of occupied states is
+\[
+D_{\mathrm{occ}}(E,T)=D(E)f(E,T).
+\]
+
+The electronic energy density is
+\[
+u(T)
+=
+\int_0^\infty
+E D(E) f(E,T)\,dE.
+\]
+
+The zero-temperature energy density is
+\[
+u(0)
+=
+\int_0^{E_F}
+E D(E)\,dE.
+\]
+
+The thermal excess energy density is
+\[
+\Delta u(T)=u(T)-u(0).
+\]
+
+The electronic heat capacity per unit volume is
+\[
+c_V^{e}(T)
+=
+\frac{d u}{dT}
+=
+\frac{d\Delta u}{dT}.
+\]
+
+In your numerical implementation, compute the heat capacity from the thermal excess energy using a centered finite difference:
+\[
+c_V^{e}(T)
+\approx
+\frac{\Delta u(T+\Delta T)-\Delta u(T-\Delta T)}{2\Delta T}.
+\]
+
+Using \(\Delta u(T)\) rather than \(u(T)\) makes the thermal part of the energy easier to interpret and reduces cancellation between large zero-temperature background energies.
+
+\subsection{Sommerfeld heat capacity check}
+
+At low temperature, the Sommerfeld model predicts that the electronic heat capacity is proportional to temperature:
+\[
+c_V^{e}(T)
+\approx
+\frac{\pi^2}{2}
+\frac{nk_{\mathrm B}^2T}{E_F}.
+\]
+
+Equivalently, \(c_V^{e}(T)/T\) should be approximately constant at low temperature.
+
+This behavior is a signature of a degenerate Fermi gas. The heat capacity is small because only electrons within an energy range of order \(k_{\mathrm B}T\) near \(E_F\) are thermally active.
+
+\subsection{Numerical implementation}
+
+Complete the provided skeleton file \texttt{sommerfeld.py} in \texttt{./src/dlsu\_solst}. Implement a class named \texttt{SommerfeldMetal}.
+
+The constructor should store the electron density \(n\), electron mass \(m\), \(\hbar\), \(k_{\mathrm B}\), and the energy-grid parameters. It should compute \(k_F\), \(E_F\), and \(T_F\). It should also create an energy grid for numerical integration.
+
+The energy grid should cover
+\[
+0\le E\le E_{\max}.
+\]
+Choose \(E_{\max}\) large enough for the largest temperature used. A useful rule is
+\[
+E_{\max}\gtrsim E_F+20k_{\mathrm B}T_{\max}.
+\]
+
+The method \texttt{fermi\_wavevector} should compute \(k_F\). The method \texttt{fermi\_energy} should compute \(E_F\). The method \texttt{fermi\_temperature} should compute \(T_F\).
+
+The method \texttt{density\_of\_states(E)} should evaluate \(D(E)\). The method \texttt{fermi\_dirac(E,T)} should evaluate \(f(E,T)\) using \(\mu=E_F\). The method \texttt{occupied\_density\_of\_states(E,T)} should compute \(D(E)f(E,T)\).
+
+The method \texttt{electron\_density(T)} should approximate
+\[
+n_{\mathrm{num}}(T)
+=
+\int_0^\infty
+D(E)f(E,T)\,dE.
+\]
+
+The method \texttt{energy\_density(T)} should approximate
+\[
+u(T)
+=
+\int_0^\infty
+E D(E) f(E,T)\,dE.
+\]
+
+The method \texttt{zero\_temperature\_energy\_density} should approximate
+\[
+u(0)
+=
+\int_0^{E_F}
+E D(E)\,dE.
+\]
+
+The method \texttt{thermal\_excess\_energy\_density(T)} should compute
+\[
+\Delta u(T)=u(T)-u(0).
+\]
+
+The method \texttt{heat\_capacity(T,dT)} should compute \(c_V^{e}(T)\) using a centered finite difference of \(\Delta u(T)\).
+
+The method \texttt{low\_temperature\_heat\_capacity(T)} should compute
+\[
+c_V^{e}(T)
+\approx
+\frac{\pi^2}{2}
+\frac{nk_{\mathrm B}^2T}{E_F}.
+\]
+
+The implementation should be progressive. The Fermi temperature should use the Fermi energy. The occupied density of states should use the density of states and the Fermi-Dirac occupation. The energy density should use the occupied density of states. The thermal excess energy should use the energy density and the zero-temperature energy density. The heat capacity should use the thermal excess energy.
+
+\subsection{Numerical stability}
+
+The Fermi-Dirac function contains the exponential
+\[
+\exp\left(\frac{E-\mu}{k_{\mathrm B}T}\right).
+\]
+For large positive arguments, this exponential may overflow in floating-point arithmetic. Your implementation should handle this carefully, for example by clipping the argument or using a numerically stable expression.
+
+Do not evaluate the finite-temperature Fermi-Dirac formula at \(T=0\). The \(T=0\) occupation is a separate limiting case:
+\[
+f(E,0)=
+\begin{cases}
+1, & E<E_F,\\
+0, & E>E_F.
+\end{cases}
+\]
+
+\subsection{Numerical checks}
+
+Check that the Fermi-Dirac occupation satisfies
+\[
+0\le f(E,T)\le1.
+\]
+
+Check that
+\[
+f(E_F,T)\approx\frac12
+\]
+when \(\mu=E_F\).
+
+Check that the density of states is nonnegative:
+\[
+D(E)\ge0.
+\]
+
+Check that the zero-temperature density relation is satisfied numerically:
+\[
+\int_0^{E_F}D(E)\,dE\approx n.
+\]
+
+Check that the finite-temperature numerical electron density is close to the input density at low temperature:
+\[
+n_{\mathrm{num}}(T)
+=
+\int_0^\infty D(E)f(E,T)\,dE
+\approx
+n,
+\qquad
+T\ll T_F.
+\]
+This check is approximate because the calculation uses a finite energy grid and the approximation \(\mu\approx E_F\). At higher temperature, holding \(\mu=E_F\) does not exactly conserve electron number.
+
+Check that the electronic heat capacity is positive and approximately linear in \(T\) at low temperature.
+
+\subsection{Numerical experiments}
+
+Use your implementation to study how Fermi-Dirac statistics changes the thermal behavior of electrons.
+
+First, plot \(f(E,T)\) versus \(E\) for several temperatures. At low temperature, the occupation should look like a sharp step near \(E_F\). As temperature increases, the step should broaden.
+
+Second, make a zoomed plot of \(f(E,T)\) near \(E_F\). Use an energy window centered on the Fermi energy to show that temperature mainly changes occupations near \(E_F\).
+
+Third, plot the density of states \(D(E)\) and the occupied density of states \(D(E)f(E,T)\). This shows which energy states are occupied at a given temperature.
+
+Fourth, compute the thermal excess energy density \(\Delta u(T)\) over a temperature grid. Then compute the electronic heat capacity \(c_V^{e}(T)\).
+
+Fifth, compare the numerical heat capacity with the low-temperature Sommerfeld result. Compute the relative error
+\[
+\varepsilon_C(T)
+=
+\frac{
+\left|
+c_V^{e,\mathrm{num}}(T)
+-
+c_V^{e,\mathrm{lowT}}(T)
+\right|
+}{
+\left|
+c_V^{e,\mathrm{lowT}}(T)
+\right|
+}.
+\]
+
+Finally, study the effect of the energy-grid resolution and energy cutoff. Repeat the calculation for several energy grids and show that the heat capacity becomes stable when the energy grid is sufficiently fine and extends far enough above \(E_F\).
+
+\subsection{Required plots}
+
+Include the following plots:
+
+\begin{enumerate}
+    \item Fermi-Dirac occupation \(f(E,T)\) versus \(E\) for several temperatures;
+    \item zoomed Fermi-Dirac occupation near \(E_F\), showing thermal broadening;
+    \item density of states \(D(E)\) and occupied density of states \(D(E)f(E,T)\);
+    \item thermal excess energy density \(\Delta u(T)\) versus temperature;
+    \item electronic heat capacity \(c_V^{e}(T)\) versus temperature;
+    \item \(c_V^{e}(T)/T\) versus temperature;
+    \item numerical heat capacity compared with the low-temperature Sommerfeld approximation;
+    \item heat-capacity convergence for several energy-grid choices.
+\end{enumerate}
+
+Each plot should have labeled axes, units where appropriate, and a short caption or explanation.
+
+\subsection{Results}
+
+Your results should report \(k_F\), \(E_F\), and \(T_F\) for the chosen electron density.
+
+Report the numerical checks. State whether \(0\le f\le1\), whether \(f(E_F,T)\approx1/2\), whether \(D(E)\ge0\), whether \(\int_0^{E_F}D(E)\,dE\approx n\), and whether the low-temperature numerical electron density is close to the input density.
+
+Report how the Fermi-Dirac occupation changes with temperature. Describe how the zero-temperature step becomes thermally broadened near \(E_F\).
+
+Report the heat-capacity results. State whether \(c_V^{e}(T)\) is approximately linear in \(T\) at low temperature and whether \(c_V^{e}(T)/T\) is approximately constant.
+
+Report the comparison between the numerical heat capacity and the low-temperature Sommerfeld approximation.
+
+Report how the results change when the energy-grid resolution and energy cutoff are varied.
+
+\subsection{Discussion}
+
+In your discussion, explain how the Sommerfeld model improves on the Drude model. The Drude model treats electrons as classical carriers, while the Sommerfeld model uses Fermi-Dirac statistics to determine which electronic states are occupied.
+
+Explain how the Fermi energy arises from the filling of quantum states. At \(T=0\), electrons fill states from the bottom of the free-electron band up to \(E_F\), forming the Fermi sea.
+
+Explain the effect of temperature on the Fermi sea. Temperature does not excite all electrons equally. It mainly changes the occupation of states near \(E_F\), over an energy range of order \(k_{\mathrm B}T\).
+
+Explain why the electronic heat capacity is small compared with the classical expectation. Most electrons lie far below the Fermi energy and cannot easily change energy because nearby lower-energy states are already occupied. Only electrons near \(E_F\) contribute significantly to the thermal response.
+
+Discuss the low-temperature result \(c_V^{e}\propto T\). Explain why this linear behavior is a signature of a degenerate Fermi gas.
+
+Discuss the numerical limitations of the calculation. The energy integral is truncated, the energy grid is finite, the Fermi-Dirac exponential can overflow if implemented naively, and the approximation \(\mu\approx E_F\) is best at low temperature.
+
+Conclude by summarizing the computational chain
+\[
+n
+\longrightarrow
+E_F
+\longrightarrow
+D(E)
+\longrightarrow
+f(E,T)
+\longrightarrow
+u(T)
+\longrightarrow
+c_V^{e}(T).
+\]
+This chain shows how Fermi-Dirac statistics connects microscopic electronic states to the thermal response of a metal.
+
+\subsection{Collaboration reminder}
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.

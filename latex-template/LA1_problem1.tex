@@ -1,0 +1,1012 @@
+\section{Problem 1: Quantum Harmonic Oscillator}
+
+\subsection{Motivation}
+
+Many models of solids begin by replacing a complicated physical system with a simple quantum model whose states and energies can be computed. The quantum harmonic oscillator is the basic model for quantized vibration. In later problems, this oscillator model becomes the starting point for the Einstein solid, Debye solid, and lattice vibration models.
+
+This problem studies the quantum harmonic oscillator in three related forms: 
+(1) the abstract operator problem, 
+(2) the position-space differential equation, and
+(3) the finite-dimensional matrix eigenvalue problem.
+
+The goal is to understand how an abstract quantum eigenvalue problem becomes a numerical computation, and how the numerical solution can be tested against the analytical solution.
+
+The analytical harmonic oscillator is defined on the infinite domain, \(-\infty < x < \infty\). The numerical harmonic oscillator is solved on a finite interval, \(x_{\min} \le x \le x_{\max}\), so it is a harmonic oscillator in a finite box. The low-energy numerical states should approximate the analytical oscillator when the box is large enough and the grid is fine enough. Higher-energy states are more sensitive to the finite box, the grid spacing, and the boundary conditions.
+
+The energy levels \(E_n\) of the harmonic oscillator are indexed by the quantum number \(n\).  Since the simple harmonic oscillator is not a periodic lattice model, so we cannot meaningfully write a They are not written as \(E(k)\), because the harmonic oscillator is not a periodic lattice model. The notation \(E(k)\) will appear later for band-structure problems.
+
+\subsection{Conceptual workflow}
+
+The main computational workflow is
+
+\[
+\hat{H}
+\quad\longrightarrow\quad
+\{E_n,\psi_n\}
+\quad\longrightarrow\quad
+p_n(T)
+\quad\longrightarrow\quad
+\langle E\rangle(T)
+\quad\longrightarrow\quad
+C_V(T).
+\]
+
+First, construct the Hamiltonian. Then compute its energy eigenvalues and eigenfunctions. Then use the energy spectrum to compute thermal occupations, average energy, and heat capacity.
+
+\subsection{Analytical methodology}
+
+Start from the time-independent Schrödinger equation in Dirac notation:
+
+\[
+\hat{H}|\psi_n\rangle
+=
+E_n|\psi_n\rangle.
+\]
+
+Here, \(|\psi_n\rangle\) is an abstract quantum state and \(E_n\) is the energy eigenvalue associated with that state.
+
+The Hamiltonian is
+
+\[
+\hat{H}
+=
+\hat{T}
++
+\hat{V},
+\]
+
+where \(\hat{T}\) is the kinetic energy operator and \(\hat{V}\) is the potential energy operator.
+
+For the one-dimensional quantum harmonic oscillator,
+
+\[
+\hat{T}
+=
+-\frac{\hbar^2}{2m}
+\frac{d^2}{dx^2}
+\]
+
+and
+
+\[
+\hat{V}
+=
+\frac{1}{2}m\omega^2x^2.
+\]
+
+Therefore,
+
+\[
+\hat{H}
+=
+-\frac{\hbar^2}{2m}
+\frac{d^2}{dx^2}
++
+\frac{1}{2}m\omega^2x^2.
+\]
+
+\subsection{Projection onto position space}
+
+Project the abstract eigenvalue equation onto the position basis by multiplying on the left by \(\langle x|\):
+
+\[
+\langle x|\hat{H}|\psi_n\rangle
+=
+E_n\langle x|\psi_n\rangle.
+\]
+
+Define the position-space wavefunction as
+
+\[
+\psi_n(x)
+=
+\langle x|\psi_n\rangle.
+\]
+
+Then the abstract eigenvalue problem becomes the differential equation
+
+\[
+\left[
+-\frac{\hbar^2}{2m}
+\frac{d^2}{dx^2}
++
+\frac{1}{2}m\omega^2x^2
+\right]\psi_n(x)
+=
+E_n\psi_n(x).
+\]
+
+This is the position-space form of the quantum harmonic oscillator.
+
+\subsection{Analytical solution}
+
+The analytical energy eigenvalues are
+
+\[
+E_n
+=
+\hbar\omega
+\left(
+n+\frac{1}{2}
+\right),
+\qquad
+n=0,1,2,\ldots.
+\]
+
+Define the oscillator length,
+
+\[
+\ell
+=
+\sqrt{
+\frac{\hbar}{m\omega}
+}.
+\]
+
+Using the dimensionless coordinate
+
+\[
+\xi
+=
+\frac{x}{\ell},
+\]
+
+the analytical wavefunctions are
+
+\[
+\psi_n(x)
+=
+\frac{1}{
+\sqrt{2^n n!}
+}
+\frac{1}{
+\pi^{1/4}\sqrt{\ell}
+}
+H_n(\xi)
+\exp\left(-\frac{\xi^2}{2}\right),
+\]
+
+where \(H_n(\xi)\) is the Hermite polynomial of order \(n\).
+
+The first three analytical wavefunctions are
+
+\[
+\psi_0(x)
+=
+\frac{1}{\pi^{1/4}\sqrt{\ell}}
+\exp\left(-\frac{\xi^2}{2}\right),
+\]
+
+\[
+\psi_1(x)
+=
+\sqrt{2}\xi\psi_0(x),
+\]
+
+and
+
+\[
+\psi_2(x)
+=
+\frac{1}{\sqrt{2}}
+\left(
+2\xi^2-1
+\right)
+\psi_0(x).
+\]
+
+The wavefunction \(\psi_n(x)\) is a probability amplitude. The probability density is
+
+\[
+\rho_n(x)
+=
+|\psi_n(x)|^2.
+\]
+
+The continuous normalization condition is
+
+\[
+\int_{-\infty}^{\infty}
+|\psi_n(x)|^2\,dx
+=
+1.
+\]
+
+The analytical energies and wavefunctions provide benchmarks for testing the numerical solution.
+
+\subsection{Numerical methodology}
+
+To compute the problem numerically, replace the continuous coordinate \(x\) with a finite grid:
+
+\[
+x_i
+=
+x_{\min}
++
+i\Delta x,
+\qquad
+i=0,1,\ldots,N_x-1.
+\]
+
+The grid spacing is
+
+\[
+\Delta x
+=
+\frac{x_{\max}-x_{\min}}{N_x-1}.
+\]
+
+The continuous wavefunction becomes a vector of values on the grid:
+
+\[
+\psi_n(x)
+\quad\longrightarrow\quad
+\boldsymbol{\psi}_n
+=
+\begin{bmatrix}
+\psi_n(x_0)\\
+\psi_n(x_1)\\
+\vdots\\
+\psi_n(x_{N_x-1})
+\end{bmatrix}.
+\]
+
+The continuous Hamiltonian operator becomes a matrix:
+
+\[
+\hat{H}
+\quad\longrightarrow\quad
+H.
+\]
+
+The numerical eigenvalue problem is therefore
+
+\[
+H\boldsymbol{\psi}_n
+=
+E_n^{\mathrm{num}}
+\boldsymbol{\psi}_n.
+\]
+
+The centered finite-difference approximation to the second derivative is
+
+\[
+\frac{d^2\psi}{dx^2}
+\bigg|_{x=x_i}
+\approx
+\frac{
+\psi_{i+1}-2\psi_i+\psi_{i-1}
+}{\Delta x^2}.
+\]
+
+Use this approximation to construct the finite-difference second-derivative matrix \(D_2\). Then construct the kinetic energy matrix,
+
+\[
+T
+=
+-\frac{\hbar^2}{2m}D_2.
+\]
+
+The potential energy matrix is diagonal in the position basis:
+
+\[
+V_{ij}
+=
+V(x_i)\delta_{ij},
+\]
+
+where
+
+\[
+V(x_i)
+=
+\frac{1}{2}m\omega^2x_i^2.
+\]
+
+The Hamiltonian matrix is
+
+\[
+H
+=
+T+V.
+\]
+
+Diagonalizing \(H\) gives the numerical eigenvalues and eigenvectors:
+
+\[
+H\boldsymbol{\psi}_n
+=
+E_n^{\mathrm{num}}\boldsymbol{\psi}_n.
+\]
+
+Normalize the numerical eigenvectors using
+
+\[
+\sum_i |\psi_{n,i}|^2\Delta x
+\approx
+1.
+\]
+
+\subsection{Boundary conditions and finite-box interpretation}
+
+The analytical harmonic oscillator is defined on the infinite domain,
+
+\[
+-\infty < x < \infty.
+\]
+
+The numerical harmonic oscillator is solved on a finite interval,
+
+\[
+x_{\min}\le x\le x_{\max}.
+\]
+
+Use Dirichlet boundary conditions:
+
+\[
+\psi_n(x_{\min})=0,
+\qquad
+\psi_n(x_{\max})=0.
+\]
+
+There are two common ways to implement these boundary conditions.
+
+One approach is to include the endpoints in the grid but fix their wavefunction values to zero. In that case, the endpoint values are not independent unknowns.
+
+Another approach is to remove the endpoints from the unknown vector and solve only for the interior grid values. In that case, the matrix eigenvalue problem is constructed only on the interior points.
+
+In your implementation and writeup, state which approach you used.
+
+Because of the finite interval and boundary conditions, the numerical solution is a harmonic oscillator in a finite box. It approaches the infinite-domain analytical solution when the boundaries are placed far into the region where the analytical wavefunction is already very small.
+
+Higher-energy states extend farther from the origin. Therefore, higher-energy states require larger boxes than lower-energy states.
+
+A useful length scale is the classical turning point. In dimensionless oscillator units,
+
+\[
+x_{\mathrm{tp}}(n)
+=
+\sqrt{2n+1}.
+\]
+
+When the turning point is close to the boundary, the finite box strongly affects the numerical eigenvalue and eigenfunction.
+
+\subsection{Unit conventions}
+
+The submitted implementation should use the internal unit scheme in Table~\ref{tab:qho-unit-scheme}.
+
+\begin{table}[h]
+\centering
+\caption{Internal unit scheme for Problem 1.}
+\label{tab:qho-unit-scheme}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+Quantity            & Internal unit \\
+\midrule
+Energy              & electronvolt, \(\mathrm{eV}\) \\
+Length              & angstrom, \(\mathrm{\AA}\) \\
+Mass                & atomic mass unit, \(\mathrm{amu}\) \\
+Time                & second, \(\mathrm{s}\) \\
+Angular frequency   & inverse second, \(\mathrm{s}^{-1}\) \\
+Temperature         & kelvin, \(\mathrm{K}\) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The Hamiltonian matrix should have units of \(\mathrm{eV}\).
+
+If the position grid is measured in \(\mathrm{\AA}\), then the finite-difference second-derivative matrix has units of \(\mathrm{\AA}^{-2}\).
+
+
+When \(m\) is measured in \(\mathrm{amu}\) and \(x\) is measured in \(\mathrm{\AA}\), write the kinetic energy matrix as
+
+\[
+T
+=
+-
+\frac{C_{\mathrm{kin}}}{m_{\mathrm{amu}}}
+D_2,
+\]
+
+where \(D_2\) is the finite-difference second-derivative matrix in \(\mathrm{\AA}^{-2}\), and
+
+\[
+C_{\mathrm{kin}}
+=
+0.00209007964\ \mathrm{eV}\,\mathrm{\AA}^2.
+\]
+
+When \(m\) is measured in \(\mathrm{amu}\), \(\omega\) is measured in \(\mathrm{s}^{-1}\), and \(x\) is measured in \(\mathrm{\AA}\), write the harmonic oscillator potential as
+
+\[
+V(x)
+=
+\frac{1}{2}
+m_{\mathrm{amu}}
+\omega^2
+x_{\mathrm{\AA}}^2
+C_{\mathrm{pot}},
+\]
+
+where
+
+\[
+C_{\mathrm{pot}}
+=
+1.036426965\times10^{-28}
+\ \mathrm{eV}\,\mathrm{s}^2\,\mathrm{\AA}^{-2}.
+\]
+
+For analytical energy eigenvalues in \(\mathrm{eV}\), use
+
+\[
+E_n
+=
+\hbar\omega
+\left(n+\frac{1}{2}\right),
+\]
+
+with
+
+\[
+\hbar
+=
+6.582119569\times10^{-16}\ \mathrm{eV}\,\mathrm{s}.
+\]
+
+Use
+
+\[
+k_{\mathrm B}
+=
+8.617333262\times10^{-5}\ \mathrm{eV/K}
+\]
+
+for thermal calculations.
+
+You may also use the dimensionless test case
+
+\[
+\hbar=1,
+\qquad
+m=1,
+\qquad
+\omega=1
+\]
+
+to debug your implementation. In that case,
+
+\[
+E_n
+=
+n+\frac{1}{2}.
+\]
+
+The dimensionless case is a debugging case only. The submitted implementation should correctly convert and compute using the internal unit scheme above.
+
+\subsection{Numerical verification}
+
+Complete the provided skeleton code in \texttt{qho1d.py}.
+
+Use the dimensionless test case
+
+\[
+\hbar=1,
+\qquad
+m=1,
+\qquad
+\omega=1
+\]
+
+as an initial debugging check. For this case,
+
+\[
+E_n
+=
+n+\frac{1}{2}.
+\]
+
+The first three exact energies are
+
+\[
+E_0=0.5,
+\qquad
+E_1=1.5,
+\qquad
+E_2=2.5.
+\]
+
+Report the following checks:
+
+\begin{itemize}
+    \item grid endpoints and grid spacing;
+    \item Hamiltonian matrix shape;
+    \item Hamiltonian symmetry or Hermiticity;
+    \item normalization of the numerical eigenvectors;
+    \item comparison between numerical and analytical eigenvalues;
+    \item comparison between numerical and analytical wavefunctions.
+\end{itemize}
+
+\subsection{Energy spectrum and energy error}
+
+The numerical Hamiltonian is a finite matrix, so it produces a finite set of numerical eigenenergies:
+
+\[
+E_0^{\mathrm{num}},
+E_1^{\mathrm{num}},
+\dots,
+E_{N_{\mathrm{eig}}-1}^{\mathrm{num}}.
+\]
+
+Here, \(N_{\mathrm{eig}}\) is the number of eigenvalues produced by the finite matrix problem. If all grid points are included as unknowns, then \(N_{\mathrm{eig}}=N_x\). If the Dirichlet endpoints are removed from the unknown vector, then \(N_{\mathrm{eig}}=N_x-2\).
+
+Report the numerical eigenenergies for all computed states:
+
+\[
+n=0,1,2,\ldots,N_{\mathrm{eig}}-1.
+\]
+
+For each computed state \(n\), compare against the analytical harmonic oscillator energy
+
+\[
+E_n^{\mathrm{exact}}
+=
+\hbar\omega
+\left(n+\frac12\right).
+\]
+
+Compute the energy error
+
+\[
+\Delta E_n
+=
+E_n^{\mathrm{num}}
+-
+E_n^{\mathrm{exact}}.
+\]
+
+Also compute the relative energy error,
+
+\[
+\varepsilon_{E,n}
+=
+\frac{
+\left|
+E_n^{\mathrm{num}}
+-
+E_n^{\mathrm{exact}}
+\right|
+}{
+\left|
+E_n^{\mathrm{exact}}
+\right|
+}.
+\]
+
+The energy-error table should include
+
+\[
+n,
+\qquad
+E_n^{\mathrm{num}},
+\qquad
+E_n^{\mathrm{exact}},
+\qquad
+\Delta E_n,
+\qquad
+\varepsilon_{E,n}.
+\]
+
+Although the error can be computed for every numerical eigenstate, only the low-energy part of the spectrum is expected to agree well with the infinite-domain analytical harmonic oscillator. At high energy, the numerical states are affected by the finite box size, the grid spacing, and the imposed boundary conditions.
+
+\subsection{Wavefunction comparison}
+
+Compare the numerical wavefunctions with the analytical wavefunctions evaluated on the same grid.
+
+Because eigenvectors are only defined up to an overall sign,
+
+\[
+\boldsymbol{\psi}_n
+\quad\text{and}\quad
+-\boldsymbol{\psi}_n
+\]
+
+represent the same quantum state.
+
+Use either the absolute overlap,
+
+\[
+S_n
+=
+\left|
+\sum_i
+\psi_{n,i}^{\mathrm{num}}
+\psi_n^{\mathrm{exact}}(x_i)
+\Delta x
+\right|,
+\]
+
+or a sign-corrected wavefunction error,
+
+\[
+\varepsilon_{\psi,n}
+=
+\min
+\left(
+\left\|
+\boldsymbol{\psi}_n^{\mathrm{num}}
+-
+\boldsymbol{\psi}_n^{\mathrm{exact}}
+\right\|,
+\left\|
+\boldsymbol{\psi}_n^{\mathrm{num}}
++
+\boldsymbol{\psi}_n^{\mathrm{exact}}
+\right\|
+\right).
+\]
+
+The overlap should approach \(1\) as the numerical wavefunction approaches the analytical wavefunction.
+
+Plot the analytical and numerical wavefunctions for at least
+
+\[
+n=0,1,2.
+\]
+
+You may also include higher-energy states to show where the finite-box approximation begins to break down.
+
+\subsection{Sensitivity to grid spacing}
+
+Study the sensitivity of the numerical solution to grid spacing.
+
+Choose a fixed box size,
+
+\[
+x_{\min}=-L,
+\qquad
+x_{\max}=L.
+\]
+
+Then solve the problem for several values of \(N_x\), such as
+
+\[
+N_x=101,\ 201,\ 401,\ 801.
+\]
+
+For each value of \(N_x\), compute
+
+\[
+\Delta x
+=
+\frac{2L}{N_x-1}.
+\]
+
+Report how the energy errors change as \(\Delta x\) decreases.
+
+Because the second derivative is approximated using a centered finite difference, the discretization error should decrease as the grid is refined, until the error from the finite box becomes dominant.
+
+Include a plot or table of
+
+\[
+\varepsilon_{E,n}
+\]
+
+versus
+
+\[
+\Delta x
+\]
+
+for at least
+
+\[
+n=0,1,2.
+\]
+
+\subsection{Sensitivity to box size}
+
+Study the effect of the finite computational box.
+
+Choose a sufficiently fine grid spacing. Then solve the problem for several box sizes, such as
+
+\[
+L=3\ell,\ 4\ell,\ 5\ell,\ 6\ell,\ 8\ell.
+\]
+
+For each box size, solve the numerical eigenvalue problem and compare the results against the infinite-domain analytical solution.
+
+Report how
+
+\[
+E_n^{\mathrm{num}}
+\]
+
+and
+
+\[
+\psi_n^{\mathrm{num}}(x)
+\]
+
+change as the box size increases.
+
+Discuss why larger boxes give better agreement with the analytical solution. Also discuss why higher-energy states require larger boxes than lower-energy states.
+
+\subsection{Thermal occupation and heat capacity}
+
+After verifying the numerical energy levels and wavefunctions, use the QHO spectrum to compute the thermal occupation and average energy of one vibrational mode.
+
+At temperature \(T\), define
+
+\[
+\beta
+=
+\frac{1}{k_{\mathrm B}T}.
+\]
+
+For a set of energy levels \(E_n\), the Boltzmann weight of level \(n\) is
+
+\[
+w_n(T)
+=
+e^{-\beta E_n}.
+\]
+
+The partition function is
+
+\[
+Z(T)
+=
+\sum_{n=0}^{\infty}
+e^{-\beta E_n}.
+\]
+
+The probability of occupying level \(n\) is
+
+\[
+p_n(T)
+=
+\frac{
+e^{-\beta E_n}
+}{
+Z(T)
+}.
+\]
+
+The average oscillator energy is
+
+\[
+\langle E\rangle(T)
+=
+\sum_{n=0}^{\infty}
+p_n(T)E_n.
+\]
+
+In a numerical calculation, the sum must be truncated:
+
+\[
+\langle E\rangle(T)
+\approx
+\sum_{n=0}^{n_{\max}}
+p_n(T)E_n.
+\]
+
+Choose \(n_{\max}\) large enough that adding more states does not significantly change \(\langle E\rangle(T)\).
+
+For the ideal harmonic oscillator,
+
+\[
+E_n
+=
+\hbar\omega
+\left(
+n+\frac{1}{2}
+\right).
+\]
+
+Then
+
+\[
+Z
+=
+\sum_{n=0}^{\infty}
+e^{-\beta\hbar\omega(n+1/2)}.
+\]
+
+Factor out the zero-point energy:
+
+\[
+Z
+=
+e^{-\beta\hbar\omega/2}
+\sum_{n=0}^{\infty}
+\left(
+e^{-\beta\hbar\omega}
+\right)^n.
+\]
+
+Using the geometric series,
+
+\[
+Z
+=
+\frac{
+e^{-\beta\hbar\omega/2}
+}{
+1-e^{-\beta\hbar\omega}
+}.
+\]
+
+The average occupation number is
+
+\[
+\bar{n}(T)
+=
+\frac{1}{
+e^{\beta\hbar\omega}-1
+}.
+\]
+
+Therefore, the average oscillator energy is
+
+\[
+\langle E\rangle(T)
+=
+\hbar\omega
+\left[
+\bar{n}(T)
++
+\frac{1}{2}
+\right].
+\]
+
+Equivalently,
+
+\[
+\langle E\rangle(T)
+=
+\frac{1}{2}\hbar\omega
++
+\frac{\hbar\omega}{
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)-1
+}.
+\]
+
+The energy-level weighting approach and the Bose-Einstein occupation approach are equivalent for the ideal quantum harmonic oscillator because the oscillator energy spectrum is evenly spaced.
+
+Compute the constant-volume heat capacity of one oscillator:
+
+\[
+C_V(T)
+=
+\frac{d\langle E\rangle}{dT}.
+\]
+
+You may compute the derivative numerically using
+
+\[
+C_V(T)
+\approx
+\frac{
+\langle E\rangle(T+\Delta T)
+-
+\langle E\rangle(T-\Delta T)
+}{
+2\Delta T
+}.
+\]
+
+For checking, the analytical heat capacity is
+
+\[
+C_V(T)
+=
+k_{\mathrm B}
+\left(
+\frac{\hbar\omega}{k_{\mathrm B}T}
+\right)^2
+\frac{
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)
+}{
+\left[
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)-1
+\right]^2
+}.
+\]
+
+The zero-point energy contributes to \(\langle E\rangle(T)\), but it does not contribute to \(C_V(T)\) because it is independent of temperature.
+
+If you use numerical eigenvalues \(E_n^{\mathrm{num}}\) instead of the exact analytical spectrum, the agreement with the Bose-Einstein expression will only be approximate. The numerical spectrum comes from a finite-grid harmonic oscillator in a box, while the Bose-Einstein expression assumes the exact infinite-domain QHO spectrum.
+
+\subsection{Required outputs}
+
+Submit the completed code and a written solution organized into four main sections:
+
+\begin{enumerate}
+    \item Analytical methodology
+    \item Numerical methodology
+    \item Results
+    \item Discussion
+\end{enumerate}
+
+\subsubsection{Analytical methodology}
+
+Your analytical methodology section should include:
+
+\begin{itemize}
+    \item the abstract Schrödinger equation in Dirac notation;
+    \item the QHO Hamiltonian;
+    \item the projection onto position space;
+    \item the resulting differential equation;
+    \item the analytical energy spectrum;
+    \item the analytical wavefunctions used for comparison;
+    \item the connection between energy-level weighting and Bose-Einstein occupation;
+    \item the expression for \(\langle E\rangle(T)\);
+    \item the definition of \(C_V(T)\).
+\end{itemize}
+
+\subsubsection{Numerical methodology}
+
+Your numerical methodology section should include:
+
+\begin{itemize}
+    \item the finite computational interval;
+    \item the grid definition and grid spacing;
+    \item the finite-difference approximation to the second derivative;
+    \item the construction of the kinetic energy matrix;
+    \item the construction of the potential energy matrix;
+    \item the construction of the Hamiltonian matrix;
+    \item the boundary condition implementation;
+    \item the normalization of numerical eigenvectors;
+    \item the unit scheme and conversion constants used in the computation.
+\end{itemize}
+
+\subsubsection{Results}
+
+Your results section should include:
+
+\begin{itemize}
+    \item all numerical eigenenergies from the finite Hamiltonian matrix;
+    \item an energy-error table containing \(n\), \(E_n^{\mathrm{num}}\), \(E_n^{\mathrm{exact}}\), \(\Delta E_n\), and \(\varepsilon_{E,n}\);
+    \item a clear indication of which part of the spectrum agrees well with the analytical oscillator;
+    \item wavefunction comparisons for at least \(n=0,1,2\);
+    \item a grid-spacing sensitivity study;
+    \item a box-size sensitivity study;
+    \item the thermal occupation \(\bar{n}(T)\);
+    \item the average oscillator energy \(\langle E\rangle(T)\);
+    \item the heat capacity \(C_V(T)\).
+\end{itemize}
+
+Include the following plots:
+
+\begin{enumerate}
+    \item harmonic oscillator potential \(V(x)\);
+    \item first three numerical probability densities;
+    \item analytical and numerical wavefunctions for at least the first three states;
+    \item relative energy error versus grid spacing;
+    \item relative energy error versus box size;
+    \item average oscillator energy versus temperature;
+    \item heat capacity versus temperature.
+\end{enumerate}
+
+\subsubsection{Discussion}
+
+Your discussion section should address:
+
+\begin{itemize}
+    \item how Dirac notation connects to the position-space differential equation;
+    \item how the position-space differential equation connects to the finite-grid matrix problem;
+    \item how the analytical solution is used to verify the numerical solution;
+    \item why the numerical QHO is a harmonic oscillator in a finite box;
+    \item why decreasing \(\Delta x\) affects the numerical result;
+    \item why increasing the box size affects the numerical result;
+    \item why higher-energy states are more sensitive to box size than lower-energy states;
+    \item why all numerical eigenenergies are valid eigenvalues of the matrix problem but not all are accurate approximations to the infinite-domain QHO;
+    \item why the energy-level weighting method and Bose-Einstein occupation formula are equivalent for the ideal QHO;
+    \item why using numerical eigenvalues makes the thermal average only approximately equal to the exact Bose-Einstein result;
+    \item why the energies are written as \(E_n\) in this problem rather than \(E(k)\).
+\end{itemize}
+
+\subsection{Collaboration reminder}
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.

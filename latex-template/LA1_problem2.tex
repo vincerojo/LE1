@@ -1,0 +1,239 @@
+\section{Problem 2: Einstein Solid}
+
+In Problem 1, you implemented the one-dimensional quantum harmonic oscillator. In this problem, you will use the analytical QHO energy spectrum to compute the thermodynamic properties of an Einstein solid.
+
+This is a numerical thermodynamics problem using an analytical spectrum. The energy levels are given by the analytical quantum harmonic oscillator formula,
+\[
+E_n=\hbar\omega\left(n+\frac12\right),
+\qquad n=0,1,2,\ldots,
+\]
+but the partition function, occupation probabilities, internal energy, and heat capacity will be computed numerically using a finite number of energy levels.
+
+An Einstein solid models a crystalline solid as a collection of independent quantum harmonic oscillators. Each atom in a three-dimensional solid contributes three independent vibrational modes, so a solid with \(N_{\mathrm{atom}}\) atoms has
+\[
+N_{\mathrm{osc}}=3N_{\mathrm{atom}}
+\]
+oscillators.
+
+The computational chain is
+\[
+E_n
+\longrightarrow
+Z
+\longrightarrow
+p_n
+\longrightarrow
+\langle E\rangle
+\longrightarrow
+U
+\longrightarrow
+C_V.
+\]
+The purpose of this problem is to show how a microscopic quantum energy spectrum determines macroscopic thermal observables.
+
+\subsection{Physical model}
+
+Use your \texttt{AnalyticalQHO1D.energies} method from \texttt{qho1.py} to generate a finite set of oscillator energy levels,
+\[
+E_0,E_1,\ldots,E_{n_{\max}-1}.
+\]
+This finite set is a truncated approximation to the full infinite spectrum. The value of \(n_{\max}\) must be large enough for the temperature range being studied.
+
+At temperature \(T\), define \(\beta=1/(k_{\mathrm B}T)\). The Boltzmann weight of energy level \(E_n\) is \(e^{-\beta E_n}\). The single-oscillator partition function is
+\[
+Z(T)=\sum_{n=0}^{n_{\max}-1}e^{-\beta E_n}.
+\]
+
+The probability that one oscillator occupies level \(n\) is
+\[
+p_n(T)=\frac{e^{-\beta E_n}}{Z(T)}.
+\]
+The probabilities should satisfy \(\sum_n p_n\approx1\).
+
+The average energy of one oscillator is
+\[
+\langle E\rangle(T)=\sum_{n=0}^{n_{\max}-1}p_n(T)E_n.
+\]
+The total internal energy of the Einstein solid is
+\[
+U(T)=N_{\mathrm{osc}}\langle E\rangle(T).
+\]
+
+The heat capacity is
+\[
+C_V(T)=\frac{dU}{dT}.
+\]
+In your numerical implementation, approximate this derivative using the centered finite difference
+\[
+C_V(T)\approx
+\frac{U(T+\Delta T)-U(T-\Delta T)}{2\Delta T}.
+\]
+
+\subsection{Analytical check}
+
+For the ideal Einstein solid, all oscillators have the same angular frequency \(\omega\). The average occupation number of one oscillator is
+\[
+\bar n(T)=
+\frac{1}{
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)-1
+}.
+\]
+The average oscillator energy can therefore be written as
+\[
+\langle E\rangle(T)=\hbar\omega\left[\bar n(T)+\frac12\right].
+\]
+
+This closed-form expression is useful as a check on the numerical finite-sum calculation. At low temperature, most oscillators remain near the ground state, so the heat capacity should be small. At high temperature, the heat capacity should approach the classical Dulong-Petit limit,
+\[
+C_V\rightarrow3N_{\mathrm{atom}}k_{\mathrm B}.
+\]
+
+If the numerical calculation does not approach this limit at high temperature, then \(n_{\max}\) may be too small for the chosen temperature range.
+
+\subsection{Numerical implementation}
+
+The file \texttt{einstein\_solid.py} already exists in \texttt{./src/dlsu\_solst}. Complete that file by implementing the \texttt{EinsteinSolid} class.
+
+The constructor should store the number of atoms \(N_{\mathrm{atom}}\), the number of energy levels \(n_{\max}\), \(\hbar\), \(\omega\), and \(k_{\mathrm B}\). It should compute \(N_{\mathrm{osc}}=3N_{\mathrm{atom}}\) and generate the finite oscillator spectrum using \texttt{AnalyticalQHO1D.energies}.
+
+The method \texttt{partition\_function(T)} should compute \(Z(T)\). The method \texttt{probabilities(T)} should compute the array of probabilities \(p_n(T)\). The method \texttt{average\_oscillator\_energy(T)} should compute \(\langle E\rangle(T)\). The method \texttt{internal\_energy(T)} should compute \(U(T)\). The method \texttt{heat\_capacity(T,dT)} should compute \(C_V(T)\) using a centered finite difference.
+
+The implementation should be progressive. The probabilities should use the partition function. The average oscillator energy should use the probabilities. The internal energy should use the average oscillator energy. The heat capacity should use the internal energy.
+
+\subsection{Numerical checks}
+
+Use the dimensionless test case \(\hbar=1\), \(\omega=1\), and \(k_{\mathrm B}=1\) to debug the implementation.
+
+First, check that the probabilities sum to one:
+\[
+\sum_{n=0}^{n_{\max}-1}p_n(T)\approx1.
+\]
+
+Second, check that the internal energy is positive:
+\[
+U(T)>0.
+\]
+
+Third, compute the heat capacity over a range of temperatures and check its limiting behavior. The heat capacity should be small at low temperature and should approach \(3N_{\mathrm{atom}}k_{\mathrm B}\) at high temperature.
+
+Finally, check that \(n_{\max}\) is large enough. If \(n_{\max}\) is too small, the calculation omits higher-energy levels that should be thermally occupied. This causes the internal energy and heat capacity to be underestimated, especially at high temperature.
+
+\subsection{Numerical experiments}
+
+Use your implementation to study how the Einstein solid changes with temperature. Instead of evaluating the model at only one or two temperatures, compute the thermodynamic quantities over a temperature grid
+\[
+T_0,T_1,\ldots,T_{N_T-1}.
+\]
+
+For each temperature, compute the occupation probabilities, average oscillator energy, internal energy, and heat capacity:
+\[
+p_n(T_j),
+\qquad
+\langle E\rangle(T_j),
+\qquad
+U(T_j),
+\qquad
+C_V(T_j).
+\]
+
+Store the occupation probabilities in a two-dimensional array whose entries are
+\[
+P_{jn}=p_n(T_j).
+\]
+This array shows how probability shifts from the ground state into excited oscillator states as temperature increases.
+
+Use this array to make a probability heat map with temperature on one axis, energy-level index \(n\) on the other axis, and color representing \(p_n(T)\). This plot should show that low temperatures occupy only the lowest oscillator levels, while higher temperatures populate many excited levels.
+
+Also compute the cumulative occupation
+\[
+F_m(T)=\sum_{n=0}^{m}p_n(T).
+\]
+Use this to estimate how many energy levels are needed at each temperature. For example, define \(n_{99}(T)\) as the smallest level index satisfying
+\[
+\sum_{n=0}^{n_{99}(T)}p_n(T)\ge0.99.
+\]
+Plot \(n_{99}(T)\) versus temperature. This is a numerical way to determine whether \(n_{\max}\) is large enough.
+
+Finally, compare the finite-sum heat capacity against the analytical Einstein heat capacity. For the ideal Einstein solid,
+\[
+C_V^{\mathrm{exact}}(T)
+=
+3N_{\mathrm{atom}}k_{\mathrm B}
+\left(
+\frac{\hbar\omega}{k_{\mathrm B}T}
+\right)^2
+\frac{
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)
+}{
+\left[
+\exp\left(\frac{\hbar\omega}{k_{\mathrm B}T}\right)-1
+\right]^2
+}.
+\]
+Compute the relative error
+\[
+\varepsilon_C(T)
+=
+\frac{
+\left|C_V^{\mathrm{num}}(T)-C_V^{\mathrm{exact}}(T)\right|
+}{
+\left|C_V^{\mathrm{exact}}(T)\right|
+}.
+\]
+Use this error to study how the choice of \(n_{\max}\) affects the accuracy of the numerical heat capacity.
+
+\subsection{Required plots}
+
+Include the following plots:
+
+\begin{enumerate}
+    \item occupation-probability heat map \(p_n(T)\);
+    \item cumulative occupation cutoff \(n_{99}(T)\) versus temperature;
+    \item internal energy \(U(T)\) versus temperature;
+    \item numerical and analytical heat capacity \(C_V(T)\) versus temperature;
+    \item relative heat-capacity error \(\varepsilon_C(T)\) versus temperature;
+    \item relative heat-capacity error for several values of \(n_{\max}\).
+\end{enumerate}
+
+The last plot should show how increasing \(n_{\max}\) improves the finite-sum approximation, especially at high temperature.
+
+\subsection{Discussion}
+
+In your discussion, explain how temperature changes the occupation probability distribution. At low temperature, the probability should be concentrated near \(n=0\). As temperature increases, the distribution should broaden and higher oscillator levels should become occupied.
+
+Discuss the meaning of \(n_{99}(T)\). Explain why more energy levels are needed at higher temperature and why a fixed \(n_{\max}\) can become inaccurate when the temperature range is too large.
+
+Discuss the heat capacity curve. Explain why \(C_V\) is small at low temperature and why it approaches the high-temperature limit
+\[
+C_V\rightarrow3N_{\mathrm{atom}}k_{\mathrm B}.
+\]
+
+Finally, compare the numerical heat capacity with the analytical Einstein heat capacity. Explain how the finite energy-level truncation affects the error and how increasing \(n_{\max}\) improves the result.
+
+\subsection{Discussion}
+
+In your discussion, explain how the Einstein solid uses the quantum harmonic oscillator spectrum as its microscopic input. Then explain how that spectrum is converted into thermal observables through the partition function and occupation probabilities.
+
+Discuss the role of the truncation level \(n_{\max}\). Explain why a small \(n_{\max}\) may be sufficient at low temperature but insufficient at high temperature.
+
+Discuss the heat capacity curve. Explain why the heat capacity is small at low temperature and why it approaches \(3N_{\mathrm{atom}}k_{\mathrm B}\) at high temperature.
+
+Conclude by summarizing the computational chain
+\[
+E_n
+\longrightarrow
+Z
+\longrightarrow
+p_n
+\longrightarrow
+\langle E\rangle
+\longrightarrow
+U
+\longrightarrow
+C_V.
+\]
+This chain shows how the microscopic quantum energy spectrum determines the macroscopic thermodynamic behavior of the Einstein solid.
+
+\subsection{Collaboration reminder}
+
+No points will be deducted for appropriate collaboration, provided that the collaboration is disclosed and the submitted code, calculations, plots, explanations, and conclusions are your own.
