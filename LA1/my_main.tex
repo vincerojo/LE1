@@ -1,0 +1,74 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{braket}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{siunitx}
+
+\usepackage{enumitem}
+\setlist[itemize]{topsep=0.25em, itemsep=0.15em}
+\setlist[enumerate]{topsep=0.25em, itemsep=0.15em}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\usepackage{wrapfig}
+\usepackage[backend=biber,bibstyle=ieee,citestyle=numeric-comp,sorting=none]{biblatex}
+\usepackage{import}
+
+\addbibresource{bibliography.bib}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+
+    \vspace*{1.5cm}
+
+    {\Large \textbf{SOLST01 Long Assessment 1}\par}
+    \vspace{0.3cm}
+
+    {\large Solid State Physics\par}
+    \vspace{0.2cm}
+
+    {De La Salle University\par}
+    {AY 2025--2026 Term 3\par}
+    \vspace{0.5cm}
+
+    {Vince Kenneth D. Rojo\par}
+
+    \vspace{1.5cm}
+
+    \tableofcontents
+
+    \vfill
+\end{titlepage}
+
+\clearpage
+\import{sub_tex_files/problem1}{LA1_problem1}
+
+\clearpage
+\import{sub_tex_files/problem2}{LA1_problem2}
+
+\clearpage
+\import{sub_tex_files/problem3}{LA1_problem3}
+
+\clearpage
+\import{sub_tex_files/problem4}{LA1_problem4}
+
+\clearpage
+\import{sub_tex_files/problem5}{LA1_problem5}
+
+\clearpage
+\import{sub_tex_files/problem6}{LA1_problem6}
+
+\clearpage
+\printbibliography{}
+
+\end{document}
